@@ -44,38 +44,50 @@ export const constantRouterMap = [
       component: () => import('@/views/pms/product/index'),
       meta: {title: '商品列表', icon: 'product-list'}
     },
+      // {
+      //   path: 'addProduct',
+      //   name: 'addProduct',
+      //   component: () => import('@/views/pms/product/add'),
+      //   meta: {title: '添加商品', icon: 'product-add'}
+      // },
       {
-        path: 'addProduct',
-        name: 'addProduct',
-        component: () => import('@/views/pms/product/add'),
-        meta: {title: '添加商品', icon: 'product-add'}
+        path: 'productDetail',
+        name: 'productDetail',
+        component: () => import('@/views/pms/product/productDetail'),
+        meta: {title: '商品详情', icon: 'product-add'}
       },
-      {
-        path: 'updateProduct',
-        name: 'updateProduct',
-        component: () => import('@/views/pms/product/update'),
-        meta: {title: '修改商品', icon: 'product-add'},
-        hidden: true
-      },
-      {
-        path: 'productRecycle',
-        name: 'productRecycle',
-        component: () => import('@/views/pms/product/index'),
-        meta: {title: '商品回收站', icon: 'product-recycle'},
-        hidden: true
-      },
-      {
-        path: 'productComment',
-        name: 'productComment',
-        component: () => import('@/views/pms/product/index'),
-        meta: {title: '商品评价', icon: 'product-comment'},
-        hidden: true
-      },
+      // {
+      //   path: 'updateProduct',
+      //   name: 'updateProduct',
+      //   component: () => import('@/views/pms/product/update'),
+      //   meta: {title: '修改商品', icon: 'product-add'},
+      //   hidden: true
+      // },
+      // {
+      //   path: 'productRecycle',
+      //   name: 'productRecycle',
+      //   component: () => import('@/views/pms/product/index'),
+      //   meta: {title: '商品回收站', icon: 'product-recycle'},
+      //   hidden: true
+      // },
+      // {
+      //   path: 'productComment',
+      //   name: 'productComment',
+      //   component: () => import('@/views/pms/product/index'),
+      //   meta: {title: '商品评价', icon: 'product-comment'},
+      //   hidden: true
+      // },
       {
         path: 'productCate',
         name: 'productCate',
         component: () => import('@/views/pms/productCate/index'),
         meta: {title: '商品分类', icon: 'product-cate'}
+      },
+      {
+        path: 'productCateTwo',
+        name: 'productCateTwo',
+        component: () => import('@/views/pms/productCate/indexTwo'),
+        meta: {title: '商品分类二级', icon: 'product-cate'}
       },
       {
         path: 'addProductCate',
@@ -84,60 +96,60 @@ export const constantRouterMap = [
         meta: {title: '添加商品分类'},
         hidden: true
       },
-      {
-        path: 'updateProductCate',
-        name: 'updateProductCate',
-        component: () => import('@/views/pms/productCate/update'),
-        meta: {title: '修改商品分类'},
-        hidden: true
-      },
-      {
-        path: 'productAttr',
-        name: 'productAttr',
-        component: () => import('@/views/pms/productAttr/index'),
-        meta: {title: '商品类型', icon: 'product-attr'}
-      },
-      {
-        path: 'productAttrList',
-        name: 'productAttrList',
-        component: () => import('@/views/pms/productAttr/productAttrList'),
-        meta: {title: '商品属性列表'},
-        hidden: true
-      },
-      {
-        path: 'addProductAttr',
-        name: 'addProductAttr',
-        component: () => import('@/views/pms/productAttr/addProductAttr'),
-        meta: {title: '添加商品属性'},
-        hidden: true
-      },
-      {
-        path: 'updateProductAttr',
-        name: 'updateProductAttr',
-        component: () => import('@/views/pms/productAttr/updateProductAttr'),
-        meta: {title: '修改商品属性'},
-        hidden: true
-      },
-      {
-        path: 'brand',
-        name: 'brand',
-        component: () => import('@/views/pms/brand/index'),
-        meta: {title: '品牌管理', icon: 'product-brand'}
-      },
-      {
-        path: 'addBrand',
-        name: 'addBrand',
-        component: () => import('@/views/pms/brand/add'),
-        meta: {title: '添加品牌'},
-        hidden: true
-      },
-      {
-        path: 'updateBrand',
-        name: 'updateBrand',
-        component: () => import('@/views/pms/brand/update'),
-        meta: {title: '编辑品牌'},
-        hidden: true
-      }
+      // {
+      //   path: 'updateProductCate',
+      //   name: 'updateProductCate',
+      //   component: () => import('@/views/pms/productCate/update'),
+      //   meta: {title: '修改商品分类'},
+      //   hidden: true
+      // },
+      // {
+      //   path: 'productAttr',
+      //   name: 'productAttr',
+      //   component: () => import('@/views/pms/productAttr/index'),
+      //   meta: {title: '商品类型', icon: 'product-attr'}
+      // },
+      // {
+      //   path: 'productAttrList',
+      //   name: 'productAttrList',
+      //   component: () => import('@/views/pms/productAttr/productAttrList'),
+      //   meta: {title: '商品属性列表'},
+      //   hidden: true
+      // },
+      // {
+      //   path: 'addProductAttr',
+      //   name: 'addProductAttr',
+      //   component: () => import('@/views/pms/productAttr/addProductAttr'),
+      //   meta: {title: '添加商品属性'},
+      //   hidden: true
+      // },
+      // {
+      //   path: 'updateProductAttr',
+      //   name: 'updateProductAttr',
+      //   component: () => import('@/views/pms/productAttr/updateProductAttr'),
+      //   meta: {title: '修改商品属性'},
+      //   hidden: true
+      // },
+      // {
+      //   path: 'brand',
+      //   name: 'brand',
+      //   component: () => import('@/views/pms/brand/index'),
+      //   meta: {title: '品牌管理', icon: 'product-brand'}
+      // },
+      // {
+      //   path: 'addBrand',
+      //   name: 'addBrand',
+      //   component: () => import('@/views/pms/brand/add'),
+      //   meta: {title: '添加品牌'},
+      //   hidden: true
+      // },
+      // {
+      //   path: 'updateBrand',
+      //   name: 'updateBrand',
+      //   component: () => import('@/views/pms/brand/update'),
+      //   meta: {title: '编辑品牌'},
+      //   hidden: true
+      // }
     ]
   },
   {

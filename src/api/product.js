@@ -15,6 +15,14 @@ export function fetchList(data) {
   })
 }
 
+export function productCateSmall(params) {
+  return request({
+    url:'/productCategory/'+params,
+    method:'get'
+    // params:params
+  })
+}
+
 export function fetchSimpleList(params) {
   return request({
     url:'/product/simpleList',
@@ -49,7 +57,7 @@ export function updateRecommendStatus(params) {
 
 export function updatePublishStatus(params) {
   return request({
-    url:'/product/update/publishStatus',
+    url:'/product/update/productStatus',
     method:'post',
     params:params
   })

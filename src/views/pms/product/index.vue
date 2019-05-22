@@ -21,10 +21,10 @@
       <div style="margin-top: 15px">
         <el-form :inline="true" :model="listQuery" size="small" label-width="140px">
           <el-form-item label="输入搜索：">
-            <el-input style="width: 203px" v-model="listQuery.keyword" placeholder="商品名称"></el-input>
+            <el-input style="width: 203px" v-model="listQuery.productName" placeholder="商品名称"></el-input>
           </el-form-item>
           <el-form-item label="商品品牌：">
-            <el-input style="width: 203px" v-model="listQuery.productSn" placeholder="商品品牌"></el-input>
+            <el-input style="width: 203px" v-model="listQuery.productBrand" placeholder="商品品牌"></el-input>
           </el-form-item>
           <el-form-item label="商品分类：">
             <el-cascader
@@ -34,10 +34,10 @@
             </el-cascader>
           </el-form-item>
           <el-form-item label="商品发布者：">
-            <el-input style="width: 203px" v-model="listQuery.productSn" placeholder="商品发布者"></el-input>
+            <el-input style="width: 203px" v-model="listQuery.userName" placeholder="商品发布者"></el-input>
           </el-form-item>
           <el-form-item label="上架状态：">
-            <el-select v-model="listQuery.publishStatus" placeholder="全部" clearable>
+            <el-select v-model="listQuery.productStatus" placeholder="全部" clearable>
               <el-option
                 v-for="item in publishStatusOptions"
                 :key="item.value"
@@ -73,6 +73,11 @@
             <p>{{scope.row.productName}}</p>
           </template>
         </el-table-column>
+        <el-table-column label="品牌" width="150" align="center">
+          <template slot-scope="scope">
+            <p>{{scope.row.productBrand}}</p>
+          </template>
+        </el-table-column>
         <el-table-column label="价格" width="120" align="center">
           <template slot-scope="scope">
             <p>价格：￥{{scope.row.productPrice}}</p>
@@ -83,15 +88,15 @@
             <p>上架：
               <el-switch
                 @change="handlePublishStatusChange(scope.$index, scope.row)"
-                :active-value="1"
-                :inactive-value="0"
-                v-model="scope.row.publishStatus">
+                active-value="1"
+                inactive-value="0"
+                v-model="scope.row.productStatus">
               </el-switch>
             </p>
           </template>
         </el-table-column>
         <el-table-column label="发布者" width="160" align="center">
-          <template slot-scope="scope">{{scope.row.productUserId}}</template>
+          <template slot-scope="scope">{{scope.row.userName}}</template>
         </el-table-column>
         <el-table-column label="操作" width="100" align="center">
           <template slot-scope="scope">
@@ -137,64 +142,6 @@
         :total="total">
       </el-pagination>
     </div>
-    <el-dialog
-      title="编辑货品信息"
-      :visible.sync="editSkuInfo.dialogVisible"
-      width="40%">
-      <span>商品货号：</span>
-      <span>{{editSkuInfo.productSn}}</span>
-      <el-input placeholder="按sku编号搜索" v-model="editSkuInfo.keyword" size="small" style="width: 50%;margin-left: 20px">
-        <el-button slot="append" icon="el-icon-search" @click="handleSearchEditSku"></el-button>
-      </el-input>
-      <el-table style="width: 100%;margin-top: 20px"
-                :data="editSkuInfo.stockList"
-                border>
-        <el-table-column
-          label="SKU编号"
-          align="center">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.skuCode"></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column
-          v-for="(item,index) in editSkuInfo.productAttr"
-          :label="item.name"
-          :key="item.id"
-          align="center">
-          <template slot-scope="scope">
-            {{getProductSkuSp(scope.row,index)}}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="销售价格"
-          width="80"
-          align="center">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.price"></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="商品库存"
-          width="80"
-          align="center">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.stock"></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="库存预警值"
-          width="100"
-          align="center">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.lowStock"></el-input>
-          </template>
-        </el-table-column>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="editSkuInfo.dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleEditSkuConfirm">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -210,16 +157,6 @@
   import {fetchList as fetchBrandList} from '@/api/brand'
   import {fetchListWithChildren} from '@/api/productCate'
 
-  // const defaultListQuery = {
-  //   keyword: null,
-  //   pageNum: 1,
-  //   pageSize: 5,
-  //   publishStatus: null,
-  //   verifyStatus: null,
-  //   productSn: null,
-  //   productCategoryId: null,
-  //   brandId: null
-  // };
   const defaultListQuery = {
     productName: null,
     pageNum: 1,
@@ -279,15 +216,14 @@
     },
     created() {
       this.getList();
-      this.getBrandList();
       this.getProductCateList();
     },
     watch: {
       selectProductCateValue: function (newValue) {
         if (newValue != null && newValue.length == 2) {
-          this.listQuery.productCategoryId = newValue[1];
+          this.listQuery.productSmallCategoryId = newValue[1];
         } else {
-          this.listQuery.productCategoryId = null;
+          this.listQuery.productSmallCategoryId = null;
         }
 
       }
@@ -305,30 +241,12 @@
       getImgUrl(icon){
         return "http://localhost:8088/image"+icon;
       },
-      getProductSkuSp(row, index) {
-        if (index === 0) {
-          return row.sp1;
-        } else if (index === 1) {
-          return row.sp2;
-        } else {
-          return row.sp3;
-        }
-      },
       getList() {
         this.listLoading = true;
         fetchList(this.listQuery).then(response => {
           this.listLoading = false;
           this.list = response.data.list;
           this.total = response.data.total;
-        });
-      },
-      getBrandList() {
-        fetchBrandList({pageNum: 1, pageSize: 100}).then(response => {
-          this.brandOptions = [];
-          let brandList = response.data.list;
-          for (let i = 0; i < brandList.length; i++) {
-            this.brandOptions.push({label: brandList[i].name, value: brandList[i].id});
-          }
         });
       },
       getProductCateList() {
@@ -346,48 +264,7 @@
           }
         });
       },
-      handleShowSkuEditDialog(index,row){
-        this.editSkuInfo.dialogVisible=true;
-        this.editSkuInfo.productId=row.id;
-        this.editSkuInfo.productSn=row.productSn;
-        this.editSkuInfo.productAttributeCategoryId = row.productAttributeCategoryId;
-        this.editSkuInfo.keyword=null;
-        fetchSkuStockList(row.id,{keyword:this.editSkuInfo.keyword}).then(response=>{
-          this.editSkuInfo.stockList=response.data;
-        });
-        fetchProductAttrList(row.productAttributeCategoryId,{type:0}).then(response=>{
-          this.editSkuInfo.productAttr=response.data.list;
-        });
-      },
-      handleSearchEditSku(){
-        fetchSkuStockList(this.editSkuInfo.productId,{keyword:this.editSkuInfo.keyword}).then(response=>{
-          this.editSkuInfo.stockList=response.data;
-        });
-      },
-      handleEditSkuConfirm(){
-        if(this.editSkuInfo.stockList==null||this.editSkuInfo.stockList.length<=0){
-          this.$message({
-            message: '暂无sku信息',
-            type: 'warning',
-            duration: 1000
-          });
-          return
-        }
-        this.$confirm('是否要进行修改', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(()=>{
-          updateSkuStockList(this.editSkuInfo.productId,this.editSkuInfo.stockList).then(response=>{
-            this.$message({
-              message: '修改成功',
-              type: 'success',
-              duration: 1000
-            });
-            this.editSkuInfo.dialogVisible=false;
-          });
-        });
-      },
+
       handleSearchList() {
         this.listQuery.pageNum = 1;
         this.getList();
@@ -419,31 +296,14 @@
         }).then(() => {
           let ids=[];
           for(let i=0;i<this.multipleSelection.length;i++){
-            ids.push(this.multipleSelection[i].id);
+            ids.push(this.multipleSelection[i].productId);
           }
           switch (this.operateType) {
             case this.operates[0].value:
-              this.updatePublishStatus(1,ids);
+              this.updatePublishStatusList(1,ids);
               break;
             case this.operates[1].value:
-              this.updatePublishStatus(0,ids);
-              break;
-            case this.operates[2].value:
-              this.updateRecommendStatus(1,ids);
-              break;
-            case this.operates[3].value:
-              this.updateRecommendStatus(0,ids);
-              break;
-            case this.operates[4].value:
-              this.updateNewStatus(1,ids);
-              break;
-            case this.operates[5].value:
-              this.updateNewStatus(0,ids);
-              break;
-            case this.operates[6].value:
-              break;
-            case this.operates[7].value:
-              this.updateDeleteStatus(1,ids);
+              this.updatePublishStatusList(0,ids);
               break;
             default:
               break;
@@ -464,9 +324,9 @@
         this.multipleSelection = val;
       },
       handlePublishStatusChange(index, row) {
-        let ids = [];
-        ids.push(row.id);
-        this.updatePublishStatus(row.publishStatus, ids);
+        // let ids = [];
+        // ids.push(row.productId);
+        this.updatePublishStatus(row.productStatus, row.productId);
       },
       handleNewStatusChange(index, row) {
         let ids = [];
@@ -498,6 +358,7 @@
       },
       handleShowProduct(index,row){
         console.log("handleShowProduct",row);
+        this.$router.push({path:'/pms/productDetail',query:{row:row}});
       },
       handleShowVerifyDetail(index,row){
         console.log("handleShowVerifyDetail",row);
@@ -507,8 +368,8 @@
       },
       updatePublishStatus(publishStatus, ids) {
         let params = new URLSearchParams();
-        params.append('ids', ids);
-        params.append('publishStatus', publishStatus);
+        params.append('productId', ids);
+        params.append('productStatus', publishStatus);
         updatePublishStatus(params).then(response => {
           this.$message({
             message: '修改成功',
@@ -517,6 +378,36 @@
           });
         });
       },
+      updatePublishStatusList(publishStatus, ids) {
+        console.log(ids);
+        for(var i=0;i<ids.length;i++){
+          console.log(publishStatus);
+          console.log(ids[i]);
+          let params = new URLSearchParams();
+          params.append('productId', ids[i]);
+          params.append('productStatus', publishStatus);
+          updatePublishStatus(params).then(response => {
+            this.$message({
+              message: '修改成功',
+              type: 'success',
+              duration: 1000
+            });
+          });
+          this.getList();
+        }
+      },
+      // updatePublishStatus(publishStatus, ids) {
+      //   let params = new URLSearchParams();
+      //   params.append('ids', ids);
+      //   params.append('publishStatus', publishStatus);
+      //   updatePublishStatus(params).then(response => {
+      //     this.$message({
+      //       message: '修改成功',
+      //       type: 'success',
+      //       duration: 1000
+      //     });
+      //   });
+      // },
       updateNewStatus(newStatus, ids) {
         let params = new URLSearchParams();
         params.append('ids', ids);

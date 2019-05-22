@@ -180,7 +180,7 @@
         });
       },
       handleShowNextLevel(index, row) {
-        this.$router.push({path: '/pms/productCateTwo', query: {parentId: row.id}})
+        this.$router.push({path: '/pms/productCate', query: {parentId: row.id}})
       },
       handleTransferProduct(index, row) {
         console.log('handleAddProductCate');
@@ -189,12 +189,14 @@
         this.$router.push({path:'/pms/updateProductCate',query:{id:row.id}});
       },
       handleDelete(index, row) {
+        alert(row.id);
         this.$confirm('是否要删除该品牌', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           deleteProductCate(row.id).then(response => {
+
             this.$message({
               message: '删除成功',
               type: 'success',
