@@ -21,46 +21,13 @@
       <div style="margin-top: 15px">
         <el-form :inline="true" :model="listQuery" size="small" label-width="140px">
           <el-form-item label="输入搜索：">
-            <el-input v-model="listQuery.orderSn" class="input-width" placeholder="订单编号"></el-input>
+            <el-input v-model="listQuery.orderId" class="input-width" placeholder="输入订单编号"></el-input>
           </el-form-item>
-          <el-form-item label="收货人：">
-            <el-input v-model="listQuery.receiverKeyword" class="input-width" placeholder="收货人姓名/手机号码"></el-input>
+          <el-form-item label="买家：">
+            <el-input v-model="listQuery.buyUserName" class="input-width" placeholder="输入买家用户名"></el-input>
           </el-form-item>
-          <el-form-item label="提交时间：">
-            <el-date-picker
-              class="input-width"
-              v-model="listQuery.createTime"
-              value-format="yyyy-MM-dd"
-              type="date"
-              placeholder="请选择时间">
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item label="订单状态：">
-            <el-select v-model="listQuery.status" class="input-width" placeholder="全部" clearable>
-              <el-option v-for="item in statusOptions"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="订单分类：">
-            <el-select v-model="listQuery.orderType" class="input-width" placeholder="全部" clearable>
-              <el-option v-for="item in orderTypeOptions"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="订单来源：">
-            <el-select v-model="listQuery.sourceType" class="input-width" placeholder="全部" clearable>
-              <el-option v-for="item in sourceTypeOptions"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
-              </el-option>
-            </el-select>
+          <el-form-item label="卖家：">
+            <el-input v-model="listQuery.sellUserName" class="input-width" placeholder="输入卖家用户名"></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -75,77 +42,31 @@
                 style="width: 100%;"
                 @selection-change="handleSelectionChange"
                 v-loading="listLoading" border>
-        <el-table-column type="selection" width="60" align="center"></el-table-column>
-        <el-table-column label="编号" width="80" align="center">
-          <template slot-scope="scope">{{scope.row.id}}</template>
+        <el-table-column label="订单编号" width="80" align="center">
+          <template slot-scope="scope">{{scope.row.orderId}}</template>
         </el-table-column>
-        <el-table-column label="订单编号" width="180" align="center">
-          <template slot-scope="scope">{{scope.row.orderSn}}</template>
+        <el-table-column label="物品编号" width="180" align="center">
+          <template slot-scope="scope">{{scope.row.productId}}</template>
+        </el-table-column>
+        <el-table-column label="物品名称" align="center">
+          <template slot-scope="scope">{{scope.row.productName}}</template>
+        </el-table-column>
+        <el-table-column label="买家账号" width="150" align="center">
+          <template slot-scope="scope">{{scope.row.buyUserName}}</template>
+        </el-table-column>
+        <el-table-column label="买家联系方式" width="150" align="center">
+          <template slot-scope="scope">{{scope.row.buyPhone}}</template>
+        </el-table-column>
+        <el-table-column label="卖家账号" width="150" align="center">
+          <template slot-scope="scope">{{scope.row.sellUserName}}</template>
+        </el-table-column>
+        <el-table-column label="卖家联系方式" width="150" align="center">
+          <template slot-scope="scope">{{scope.row.sellPhone}}</template>
         </el-table-column>
         <el-table-column label="提交时间" width="180" align="center">
           <template slot-scope="scope">{{scope.row.createTime | formatCreateTime}}</template>
         </el-table-column>
-        <el-table-column label="用户账号" align="center">
-          <template slot-scope="scope">{{scope.row.memberUsername}}</template>
-        </el-table-column>
-        <el-table-column label="订单金额" width="120" align="center">
-          <template slot-scope="scope">￥{{scope.row.totalAmount}}</template>
-        </el-table-column>
-        <el-table-column label="支付方式" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.payType | formatPayType}}</template>
-        </el-table-column>
-        <el-table-column label="订单来源" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.sourceType | formatSourceType}}</template>
-        </el-table-column>
-        <el-table-column label="订单状态" width="120" align="center">
-          <template slot-scope="scope">{{scope.row.status | formatStatus}}</template>
-        </el-table-column>
-        <el-table-column label="操作" width="200" align="center">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              @click="handleViewOrder(scope.$index, scope.row)"
-            >查看订单</el-button>
-            <el-button
-              size="mini"
-              @click="handleCloseOrder(scope.$index, scope.row)"
-              v-show="scope.row.status===0">关闭订单</el-button>
-            <el-button
-              size="mini"
-              @click="handleDeliveryOrder(scope.$index, scope.row)"
-              v-show="scope.row.status===1">订单发货</el-button>
-            <el-button
-              size="mini"
-              @click="handleViewLogistics(scope.$index, scope.row)"
-              v-show="scope.row.status===2||scope.row.status===3">订单跟踪</el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDeleteOrder(scope.$index, scope.row)"
-              v-show="scope.row.status===4">删除订单</el-button>
-          </template>
-        </el-table-column>
       </el-table>
-    </div>
-    <div class="batch-operate-container">
-      <el-select
-        size="small"
-        v-model="operateType" placeholder="批量操作">
-        <el-option
-          v-for="item in operateOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-      <el-button
-        style="margin-left: 20px"
-        class="search-button"
-        @click="handleBatchOperate()"
-        type="primary"
-        size="small">
-        确定
-      </el-button>
     </div>
     <div class="pagination-container">
       <el-pagination
@@ -179,18 +100,15 @@
   </div>
 </template>
 <script>
-  import {fetchList,closeOrder,deleteOrder} from '@/api/order'
+  import {fetchList,closeOrder,deleteOrder,getUserInfo} from '@/api/order'
   import {formatDate} from '@/utils/date';
   import LogisticsDialog from '@/views/oms/order/components/logisticsDialog';
   const defaultListQuery = {
     pageNum: 1,
-    pageSize: 10,
-    orderSn: null,
-    receiverKeyword: null,
-    status: null,
-    orderType: null,
-    sourceType: null,
-    createTime: null,
+    pageSize: 5,
+    orderId: null,
+    buyUserName: null,
+    sellUserName: null
   };
   export default {
     name: "orderList",

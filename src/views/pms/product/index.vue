@@ -28,10 +28,10 @@
           </el-form-item>
           <el-form-item label="商品分类：">
             <el-cascader
-              clearable
-              v-model="selectProductCateValue"
-              :options="productCateOptions">
-            </el-cascader>
+            clearable
+            v-model="selectProductCateValue"
+            :options="productCateOptions">
+          </el-cascader>
           </el-form-item>
           <el-form-item label="商品发布者：">
             <el-input style="width: 203px" v-model="listQuery.userName" placeholder="商品发布者"></el-input>

@@ -3,12 +3,6 @@
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets" style="margin-top: 5px"></i>
       <span style="margin-top: 5px">数据列表</span>
-      <el-button
-        class="btn-add"
-        @click="handleAddProductCate()"
-        size="mini">
-        添加
-      </el-button>
     </el-card>
     <div class="table-container">
       <el-table ref="productCateTable"
@@ -16,38 +10,39 @@
                 :data="list"
                 v-loading="listLoading" border>
         <el-table-column label="编号" width="150" align="center">
-          <template slot-scope="scope">{{scope.row.id}}</template>
+          <template slot-scope="scope">{{scope.row.productId}}</template>
         </el-table-column>
-        <el-table-column label="分类名称" align="center">
-          <template slot-scope="scope">{{scope.row.name}}</template>
+        <el-table-column label="物品名称" align="center">
+          <template slot-scope="scope">{{scope.row.productName}}</template>
         </el-table-column>
-        <el-table-column label="级别" width="150" align="center">
-          <template slot-scope="scope">{{scope.row.level | levelFilter}}</template>
+        <el-table-column label="物品所在地" width="300" align="center">
+          <template slot-scope="scope">{{scope.row.productAddress}}</template>
         </el-table-column>
-        <el-table-column label="设置" width="250" align="center">
+        <el-table-column label="操作" width="250" align="center">
           <template slot-scope="scope">
-            <el-button
-              size="mini"
-              :disabled="scope.row.level | disableNextLevel"
-              @click="handleShowNextLevel(scope.$index, scope.row)">查看下级
-            </el-button>
             <!--<el-button-->
               <!--size="mini"-->
-              <!--@click="handleTransferProduct(scope.$index, scope.row)">转移商品-->
+              <!--:disabled="scope.row.level | disableNextLevel"-->
+              <!--@click="handleShowNextLevel(scope.$index, scope.row)">转移-->
             <!--</el-button>-->
+            <el-button
+            size="mini"
+            @click="showLogisticsDialog(scope.row.productId)">转移商品
+            </el-button>
           </template>
         </el-table-column>
         <!--<el-table-column label="操作" width="250" align="center">-->
-          <!--<template slot-scope="scope">-->
-            <!--<el-button-->
-              <!--size="mini"-->
-              <!--type="danger"-->
-              <!--@click="handleDelete(scope.$index, scope.row)">删除-->
-            <!--</el-button>-->
-          <!--</template>-->
+        <!--<template slot-scope="scope">-->
+        <!--<el-button-->
+        <!--size="mini"-->
+        <!--type="danger"-->
+        <!--@click="handleDelete(scope.$index, scope.row)">删除-->
+        <!--</el-button>-->
+        <!--</template>-->
         <!--</el-table-column>-->
       </el-table>
     </div>
+
     <div class="pagination-container">
       <el-pagination
         background
@@ -60,12 +55,32 @@
         :total="total">
       </el-pagination>
     </div>
+    <el-dialog title="转移商品"
+               :visible.sync="markOrderDialogVisible"
+               width="40%">
+      <!--<el-form :model="markInfo"-->
+               <!--label-width="150px">-->
+        <!--<el-form-item label="操作备注：">-->
+          <!--<el-input v-model="markInfo.note" type="textarea" rows="3">-->
+          <!--</el-input>-->
+        <!--</el-form-item>-->
+      <!--</el-form>-->
+      <el-cascader
+      clearable
+      v-model="selectProductCateValue"
+      :options="productCateOptions">
+      </el-cascader>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="markOrderDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleMarkOrder">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
+
 </template>
-
 <script>
-  import {fetchList,deleteProductCate,updateShowStatus,updateNavStatus} from '@/api/productCate'
-
+  import {fetchListProduct,deleteProductCate,updatePublishCate,updateShowStatus,updateNavStatus} from '@/api/productCate'
+  import {fetchListWithChildren} from '@/api/productCate'
   export default {
     name: "productCateList",
     data() {
@@ -77,20 +92,76 @@
           pageNum: 1,
           pageSize: 5
         },
-        parentId: 0
+        selectProductCateValue: null,
+        parentId: 0,
+        productCateOptions: [],
+        dialogVisible:false,     //模态框是否显示
+        addLoading: false,       //是否显示loading
+        markOrderDialogVisible:false,
+        productIdCate:0
       }
     },
     created() {
       this.resetParentId();
       this.getList();
+      this.getProductCateList();
     },
     watch: {
       $route(route) {
         this.resetParentId();
         this.getList();
+      },
+      selectProductCateValue: function (newValue) {
+        if (newValue != null && newValue.length == 2) {
+          this.listQuery.productSmallCategoryId = newValue[1];
+        } else {
+          this.listQuery.productSmallCategoryId = null;
+        }
+
       }
     },
     methods: {
+      handleMarkOrder(){
+      console.log(this.selectProductCateValue[1]);
+      console.log(this.productIdCate);
+        this.$confirm('是否要进行物品转移?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let params = new URLSearchParams();
+          params.append("productId",this.productIdCate);
+          params.append("productSmallCate",this.selectProductCateValue[1]);
+          updatePublishCate(params).then(response=>{
+            this.markOrderDialogVisible=false;
+            this.$message({
+              type: 'success',
+              message: '物品类别转移成功!'
+            });
+              this.getList();
+          });
+        });
+      },
+      showLogisticsDialog(value){
+        this.productIdCate = value;
+        // console.log(value);
+        this.markOrderDialogVisible=true;
+      },
+      getProductCateList() {
+        fetchListWithChildren().then(response => {
+          let list = response.data;
+          this.productCateOptions = [];
+          for (let i = 0; i < list.length; i++) {
+            let children = [];
+            if (list[i].children != null && list[i].children.length > 0) {
+              for (let j = 0; j < list[i].children.length; j++) {
+                children.push({label: list[i].children[j].name, value: list[i].children[j].id});
+              }
+            }
+            this.productCateOptions.push({label: list[i].name, value: list[i].id, children: children});
+          }
+        });
+      },
       resetParentId(){
         if (this.$route.query.parentId != null) {
           this.parentId = this.$route.query.parentId;
@@ -98,12 +169,9 @@
           this.parentId = 0;
         }
       },
-      handleAddProductCate() {
-        this.$router.push('/pms/addProductCate');
-      },
       getList() {
         this.listLoading = true;
-        fetchList(this.parentId, this.listQuery).then(response => {
+        fetchListProduct(this.$route.query.parentId, this.listQuery).then(response => {
           this.listLoading = false;
           this.list = response.data.list;
           this.total = response.data.total;
@@ -148,9 +216,6 @@
       },
       handleShowNextLevel(index, row) {
         this.$router.push({path: '/pms/productCateTwo', query: {parentId: row.id}})
-      },
-      handleTransferProduct(index, row) {
-        console.log('handleAddProductCate');
       },
       handleDelete(index, row) {
         this.$confirm('是否要删除该品牌', '提示', {

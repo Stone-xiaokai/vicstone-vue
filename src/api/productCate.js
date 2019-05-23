@@ -6,6 +6,21 @@ export function fetchList(parentId,params) {
     params:params
   })
 }
+export function fetchListProduct(smallcateId,params) {
+  return request({
+    url:'/product/select/productBySmallLeiPage/'+smallcateId,
+    method:'get',
+    params:params
+  })
+}
+
+export function updatePublishCate(params) {
+  return request({
+    url:'/product/update/productCate',
+    method:'post',
+    params:params
+  })
+}
 export function deleteProductCate(id) {
   return request({
     url:'/productCategory/delete/'+id,

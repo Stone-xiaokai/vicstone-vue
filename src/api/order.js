@@ -1,9 +1,24 @@
 import request from '@/utils/request'
+// export function fetchList(params) {
+//   return request({
+//     url:'/order/list',
+//     method:'get',
+//     params:params
+//   })
+// }
+
 export function fetchList(params) {
   return request({
-    url:'/order/list',
-    method:'get',
-    params:params
+    url:'/order/getOrderList',
+    method:'post',
+    data:params
+  })
+}
+
+export function getUserInfo(params) {
+  return request({
+    url:'/member/'+params,
+    method:'get'
   })
 }
 

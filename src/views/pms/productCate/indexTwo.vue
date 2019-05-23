@@ -24,35 +24,6 @@
         <el-table-column label="级别" width="100" align="center">
           <template slot-scope="scope">{{scope.row.level | levelFilter}}</template>
         </el-table-column>
-        <el-table-column label="商品数量" width="100" align="center">
-          <template slot-scope="scope">{{scope.row.productCount }}</template>
-        </el-table-column>
-        <el-table-column label="数量单位" width="100" align="center">
-          <template slot-scope="scope">{{scope.row.productUnit }}</template>
-        </el-table-column>
-        <el-table-column label="导航栏" width="100" align="center">
-          <template slot-scope="scope">
-            <el-switch
-              @change="handleNavStatusChange(scope.$index, scope.row)"
-              :active-value="1"
-              :inactive-value="0"
-              v-model="scope.row.navStatus">
-            </el-switch>
-          </template>
-        </el-table-column>
-        <el-table-column label="是否显示" width="100" align="center">
-          <template slot-scope="scope">
-            <el-switch
-              @change="handleShowStatusChange(scope.$index, scope.row)"
-              :active-value="1"
-              :inactive-value="0"
-              v-model="scope.row.showStatus">
-            </el-switch>
-          </template>
-        </el-table-column>
-        <el-table-column label="排序" width="100" align="center">
-          <template slot-scope="scope">{{scope.row.sort }}</template>
-        </el-table-column>
         <el-table-column label="设置" width="200" align="center">
           <template slot-scope="scope">
             <el-button
@@ -68,10 +39,6 @@
         </el-table-column>
         <el-table-column label="操作" width="200" align="center">
           <template slot-scope="scope">
-            <el-button
-              size="mini"
-              @click="handleUpdate(scope.$index, scope.row)">编辑
-            </el-button>
             <el-button
               size="mini"
               type="danger"
@@ -183,26 +150,33 @@
         this.$router.push({path: '/pms/productCate', query: {parentId: row.id}})
       },
       handleTransferProduct(index, row) {
-        console.log('handleAddProductCate');
-      },
-      handleUpdate(index, row) {
-        this.$router.push({path:'/pms/updateProductCate',query:{id:row.id}});
+        this.$router.push({path: '/pms/productCateProduct', query: {parentId: row.id}})
       },
       handleDelete(index, row) {
-        alert(row.id);
         this.$confirm('是否要删除该品牌', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          console.log(row.id);
           deleteProductCate(row.id).then(response => {
+            console.log(response.code);
+            if(response.data>0){
+              this.$message({
+                message: '删除成功',
+                type: 'success',
+                duration: 1000
+              });
+              this.getList();
+            }else {
+              this.$message({
+                message: '该小类下还有物品，请先做物品转移',
+                type: 'fail',
+                duration: 1000
+              });
+            }
 
-            this.$message({
-              message: '删除成功',
-              type: 'success',
-              duration: 1000
-            });
-            this.getList();
+
           });
         });
       }
