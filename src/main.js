@@ -15,10 +15,16 @@ import store from './store'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+
+
 // 引入echarts
 import echarts from 'echarts'
 
 Vue.prototype.$echarts = echarts
+
+import china from 'echarts/map/js/china.js'
+
+// Vue.prototype.$china = china
 
 Vue.use(ElementUI, { locale })
 Vue.use(VCharts)

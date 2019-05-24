@@ -178,7 +178,7 @@ export const constantRouterMap = [
         meta: {title: '订单详情'},
         hidden:true
       }
-      // {
+      // {productDetail
       //   path: 'deliverOrderList',
       //   name: 'deliverOrderList',
       //   component: () => import('@/views/oms/order/deliverOrderList'),

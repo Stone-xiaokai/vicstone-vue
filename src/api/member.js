@@ -86,5 +86,12 @@ export function selectProductCountCate() {
   })
 }
 
+export function selectUserCityCount() {
+  return request({
+    url:'/member/selectUserCityCount',
+    method:'get'
+  })
+}
+
 
 
