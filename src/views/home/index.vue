@@ -114,9 +114,7 @@
         var dataCity = [];
         var productCateData=[];
         selectProductCountCate().then(response => {
-          console.log(response.data);
           productCateData = response.data;
-          console.log(productCateData);
           // this.productCateData = response.data;
           // 基于准备好的dom，初始化echarts实例
           let myChart = this.$echarts.init(document.getElementById('myChart'))
@@ -125,8 +123,12 @@
             // title:{
             //   text:'ECharts 数据统计'
             // },
+            tooltip : {
+              trigger: 'item',
+              formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
             series:[{
-              name:'访问量',
+              name:'分类',
               type:'pie',
               radius:'60%',
               // data:[
@@ -168,6 +170,7 @@
               '威海':[122.1,37.5],
               '承德':[117.93,40.97],
               '厦门':[118.1,24.46],
+              '宁德':[119.52,26.67],
               '汕尾':[115.375279,22.786211],
               '潮州':[116.63,23.68],
               '丹东':[124.37,40.13],
@@ -339,17 +342,24 @@
             var convertData = function (data) {
               var res = [];
               for (var i = 0; i < data.length; i++) {
-                var geoCoord = geoCoordMap[data[i].name.substring(3,5)];
+                var geoCoord = geoCoordMap[data[i].name.substring(3,data[i].name.length-1)];
                 if (geoCoord) {
                   res.push({
-                    name: data[i].name.substring(3,5),
+                    name: data[i].name.substring(3,data[i].name.length-1),
                     value: geoCoord.concat(data[i].values)
                   });
                 }
               }
               return res;
             };
-
+            var cityNumList = [];
+            var cityNum = convertData(dataCity);
+            for(var i=0;i<cityNum.length;i++){
+              cityNumList.push(cityNum[i].value[2]);
+            }
+            console.log("ppppp");
+            console.log(cityNum);
+            console.log(cityNumList);
             var option3 = {
               backgroundColor: '#404a59',
               title: {
@@ -392,30 +402,30 @@
                 }
               },
               series : [
-                // {
-                //   name: '人数',
-                //   type: 'scatter',
-                //   coordinateSystem: 'geo',
-                //   data: convertData([{"name":"邯郸","values":2},{"name":"衡水","values":4}]),
-                //   symbolSize: function (val) {
-                //     return val[2] / 8;
-                //   },
-                //   label: {
-                //     normal: {
-                //       formatter: '{b}',
-                //       position: 'right',
-                //       show: false
-                //     },
-                //     emphasis: {
-                //       show: true
-                //     }
-                //   },
-                //   itemStyle: {
-                //     normal: {
-                //       color: '#ddb926'
-                //     }
-                //   }
-                // },
+                {
+                  name: '人数',
+                  type: 'scatter',
+                  coordinateSystem: 'geo',
+                  data: convertData(dataCity),
+                  symbolSize: function (val) {
+                    return val[2] / 8;
+                  },
+                  label: {
+                    normal: {
+                      formatter: '{c}',
+                      position: 'top',
+                      show: true
+                    },
+                    emphasis: {
+                      show: true
+                    }
+                  },
+                  itemStyle: {
+                    normal: {
+                      color: '#ddb926'
+                    }
+                  }
+                },
                 {
                   name: 'Top 5',
                   type: 'effectScatter',

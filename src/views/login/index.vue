@@ -98,6 +98,7 @@
               this.loading = false;
               this.$router.push({path: '/'})
             }).catch(() => {
+              console.log("password is wrong!")
               this.loading = false
             })
           } else {

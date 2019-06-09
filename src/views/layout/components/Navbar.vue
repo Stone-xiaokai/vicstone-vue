@@ -4,7 +4,8 @@
     <breadcrumb></breadcrumb>
     <el-dropdown class="avatar-container" trigger="click">
       <div class="avatar-wrapper">
-        <img class="user-avatar" :src="avatar">
+        <!--<img class="user-avatar" :src="avatar">-->
+        <img class="user-avatar" :src="Adminpig">
         <i class="el-icon-caret-bottom"></i>
       </div>
       <el-dropdown-menu class="user-dropdown" slot="dropdown">
@@ -22,9 +23,12 @@
 </template>
 
 <script>
+
+
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import Adminpig from '@/assets/images/admin.jpg'
 
 export default {
   components: {
@@ -36,6 +40,11 @@ export default {
       'sidebar',
       'avatar'
     ])
+  },
+  data() {
+    return {
+      Adminpig
+    }
   },
   methods: {
     toggleSideBar() {

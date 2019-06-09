@@ -75,7 +75,7 @@
 
   const defaultProductCate = {
     description: '',
-    icon: '',
+    icon: 'http://macro-oss.oss-cn-shenzhen.aliyuncs.com/mall/images/20190129/product_cate_peijian.png',
     keywords: '',
     name: '',
     navStatus: 0,
